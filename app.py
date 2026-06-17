@@ -35,7 +35,7 @@ app.wsgi_app = ProxyFix(app.wsgi_app, x_prefix=1)  # Allow passthrough behind ng
 
 app.config.update(
     SESSION_COOKIE_SECURE=True,
-    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_HTTPONLY=False, #False if passthrough behind nginx reverse proxy
     SESSION_COOKIE_SAMESITE="Lax",
     MAX_CONTENT_LENGTH=3 * 1024 * 1024 * 1024, #5 Gb
 )
