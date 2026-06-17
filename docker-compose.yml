@@ -1,0 +1,11 @@
+services:
+  web-drive:
+    build: .
+    container_name: web-drive
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - ./uploads:/app/uploads
+      - ./users.db:/app/users.db
+      - ./templates:/app/templates
+      - ./.env:/app/.env

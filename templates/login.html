@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block titulo %}Login{% endblock %}
+{% block estilos %}
+<style>
+    .login-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin-top: -30px;
+    }
+    .login-card {
+        width: 100%;
+        max-width: 400px;
+    }
+    .login-card .card-header {
+        background-color: #f8f9fa;
+        border: none;
+    }
+    .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+    .btn-login {
+        background-color: black;
+        border: none;
+    }
+    .btn-login:hover {
+        background-color: gray;
+    }
+</style>
+{% endblock %}
+{% block contenido %}
+<div class="login-container">
+    <div class="login-card">
+        <div class="card">
+            <div class="card-header text-black">
+                <h3 class="mb-0">Login</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('login') }}">
+                    <div class="mb-3">
+                        <label for="user" class="form-label">User</label>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="user" 
+                            name="username" 
+                            required
+                            autofocus
+                        >
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input 
+                            type="password" 
+                            class="form-control" 
+                            id="password" 
+                            name="password"
+                            required
+                        >
+                    </div>
+                    <button type="submit" class="btn btn-login btn-primary w-100">
+                        Log in
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
