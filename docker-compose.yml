@@ -6,7 +6,7 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - ./uploads:/app/uploads
-      - ./users.db:/app/users.db
-      - ./templates:/app/templates
-      - ./.env:/app/.env
+      - ./uploads:/web-drive/uploads
+      - ./users.db:/web-drive/users.db
+      - ./templates:/web-drive/templates
+      - ./.env:/web-drive/.env
