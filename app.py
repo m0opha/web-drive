@@ -134,7 +134,6 @@ def dashboard():
     user_folder = get_user_folder(username)
     files = os.listdir(user_folder)
 
-    print(files)
     return render_template(
         'dashboard.html',
         username=username,
