@@ -13,6 +13,30 @@
         .navbar-brand { font-weight: bold; font-size: 1.5rem; }
         .container-main { margin-top: 30px; }
         .card { border: none; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            width: 350px;
+        }
+
+        .floating-alert {
+            animation: slideIn 0.3s ease;
+            margin-bottom: 10px;
+            border-radius: 10px;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        } 
     </style>
     {% block estilos %}{% endblock %}
 </head>
@@ -59,7 +83,7 @@
         </div>
     </nav>
     {% endif %}
-    <div class="container container-main">
+    <div class="toast-container">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
