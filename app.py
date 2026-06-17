@@ -164,8 +164,16 @@ def upload_file():
     #rechazar si tamaño carpeta usuario es > 10gb
     size = get_folder_size(user_folder)
     MAX_CAPACITY = 20 * 1024 ** 3
-    if size > MAX_CAPACITY:
-        flash("maximum capacity reached.", "danger")
+    uploadSize = 0
+
+    for file in files:
+        if file:
+            file.seek(0, os.SEEK_END)
+            uploadSize += file.tell()
+            file.seek(0)
+    
+    if size + uploadSize > MAX_CAPACITY:
+        flash("Maximum capacity exceeded.", "danger")
         return redirect(url_for('dashboard'))
     
     for file in files:
