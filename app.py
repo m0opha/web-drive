@@ -153,7 +153,6 @@ def logout():
 @app.route('/upload', methods=['POST'])
 @login_required
 def upload_file():
-
     if 'files' not in request.files:
         flash('File not found.', 'danger')
         return redirect(url_for('dashboard'))
@@ -161,32 +160,26 @@ def upload_file():
     username = session.get('username')
     user_folder = get_user_folder(username)
     files = request.files.getlist('files')
-    
-    #rechazar si tamaño carpeta usuario es > 10gb
+
+    # Calcular tamaño desde Content-Length en vez de seek
+    upload_size = request.content_length or 0
     size = get_folder_size(user_folder)
     MAX_CAPACITY = 20 * 1024 ** 3
-    uploadSize = 0
 
-    for file in files:
-        if file:
-            file.seek(0, os.SEEK_END)
-            uploadSize += file.tell()
-            file.seek(0)
-    
-    if size + uploadSize > MAX_CAPACITY:
+    if size + upload_size > MAX_CAPACITY:
         flash("Maximum capacity exceeded.", "danger")
         return redirect(url_for('dashboard'))
-    
+
     for file in files:
         if file and file.filename != '':
             filename = secure_filename(file.filename)
-   
             if not filename:
                 flash('Invalid filename.', 'danger')
                 continue
-
             file.save(os.path.join(user_folder, filename))
 
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return '', 200
     return redirect(url_for('dashboard'))
 
 
