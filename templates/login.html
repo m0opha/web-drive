@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block titulo %}Login{% endblock %}
+
 {% block estilos %}
 <style>
     .login-container {
@@ -14,54 +15,82 @@
         max-width: 400px;
     }
     .login-card .card-header {
-        background-color: #f8f9fa;
-        border: none;
+        background-color: #1a1a1a;
+        border-bottom: 1px solid #333;
+        border-radius: 15px 15px 0 0 !important;
+    }
+    .login-card .card-header h3 {
+        color: #ffffff;
+    }
+    .login-card .card-body {
+        background-color: #111111;
+        border-radius: 0 0 15px 15px;
+    }
+    .login-card .form-label {
+        color: #cccccc;
+    }
+    .form-control {
+        background-color: #1e1e1e;
+        border: 1px solid #444;
+        color: #ffffff;
     }
     .form-control:focus {
+        background-color: #1e1e1e;
         border-color: #667eea;
         box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        color: #ffffff;
+    }
+    .form-control::placeholder {
+        color: #666;
     }
     .btn-login {
-        background-color: black;
+        background-color: #667eea;
         border: none;
+        font-weight: 500;
+        letter-spacing: 0.5px;
     }
     .btn-login:hover {
-        background-color: gray;
+        background-color: #5a6fd6;
     }
 </style>
 {% endblock %}
-{% block contenido %}
+
+{% block content %}
 <div class="login-container">
     <div class="login-card">
         <div class="card">
-            <div class="card-header text-black">
-                <h3 class="mb-0">Login</h3>
+            <div class="card-header">
+                <h3 class="mb-0">
+                    <i class="fas fa-lock me-2" style="color:#667eea;"></i>Login
+                </h3>
             </div>
-            <div class="card-body">
+            <div class="card-body p-4">
                 <form method="POST" action="{{ url_for('login') }}">
                     <div class="mb-3">
                         <label for="user" class="form-label">User</label>
-                        <input 
-                            type="text" 
-                            class="form-control" 
-                            id="user" 
-                            name="username" 
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="user"
+                            name="username"
+                            placeholder="Enter your username"
                             required
                             autofocus
                         >
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-4">
                         <label for="password" class="form-label">Password</label>
-                        <input 
-                            type="password" 
-                            class="form-control" 
-                            id="password" 
+                        <input
+                            type="password"
+                            class="form-control"
+                            id="password"
                             name="password"
+                            placeholder="Enter your password"
                             required
                         >
                     </div>
                     <button type="submit" class="btn btn-login btn-primary w-100">
-                        Log in
+                        <i class="fas fa-sign-in-alt me-2"></i>Log in
                     </button>
                 </form>
             </div>
