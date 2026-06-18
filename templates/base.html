@@ -13,6 +13,18 @@
         .navbar-brand { font-weight: bold; font-size: 1.5rem; }
         .container-main { margin-top: 30px; }
         .card { border: none; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.1);} 
+        #flashContainer {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 99999;
+            width: 400px;
+        }
+
+       .flash-message {
+            margin-bottom: 10px;
+            border-radius: 10px;
+        }
     </style>
     {% block estilos %}{% endblock %}
 </head>
@@ -60,33 +72,18 @@
     </nav>
     {% endif %}
    
-    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+    <div id="flashContainer">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="toast show" role="alert" data-bs-delay="3000">
-                        <div class="toast-header">
-                            <strong class="me-auto">
-                                {% if category == 'success' %}
-                                    Success
-                                {% elif category == 'danger' %}
-                                    Error
-                                {% elif category == 'warning' %}
-                                    Warning
-                                {% else %}
-                                    Information
-                                {% endif %}
-                            </strong>
+                    <div class="alert alert-{{ category }} alert-dismissible fade show flash-message shadow-lg"
+                        role="alert">
+                        {{ message }}
 
-                            <button type="button"
-                                    class="btn-close"
-                                    data-bs-dismiss="toast">
-                            </button>
-                        </div>
-
-                        <div class="toast-body">
-                            {{ message }}
-                        </div>
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="alert">
+                        </button>
                     </div>
                 {% endfor %}
             {% endif %}
@@ -129,15 +126,12 @@
     {% block scripts %}{% endblock %}
     <script>
     document.addEventListener('DOMContentLoaded', () => {
-        document.querySelectorAll('.toast').forEach(el => {
-            const toast = new bootstrap.Toast(el, {
-                delay: 1000,
-                autohide: true
-            });
-
-            toast.show();
+        document.querySelectorAll('.flash-message').forEach(alert => {
+            setTimeout(() => {
+                bootstrap.Alert.getOrCreateInstance(alert).close();
+            }, 3000);
         });
     });
-    </script>    
+    </script>  
 </body>
 </html>
