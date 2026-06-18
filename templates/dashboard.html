@@ -73,6 +73,14 @@
             </div>
             <div id="filesPreview"></div>
           </form>
+          <div id="uploadOverlay" class="d-none position-absolute top-0 start-0 w-100 h-100 
+                d-flex align-items-center justify-content-center rounded"
+                style="background: rgba(0,0,0,0.4); z-index: 10;">
+            <div class="text-center text-white">
+                <div class="spinner-border mb-2" role="status"></div>
+                <p class="mb-0">Uploading...</p>
+            </div>
+        </div>
         </div>
       </div>
 
@@ -267,5 +275,10 @@ async function saveFile() {
         document.getElementById('modalInfo').textContent = '⚠ ' + e.message;
     }
 }
+document.getElementById('uploadForm').addEventListener('submit', function() {
+  const overlay = document.getElementById('uploadOverlay');
+  overlay.classList.remove('d-none');
+  overlay.classList.add('d-flex');
+});
 </script>
 {% endblock %}
