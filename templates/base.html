@@ -154,7 +154,25 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <!-- Flash notifications flotantes -->
-    <div id="toast-container" aria-live="polite" aria-atomic="false"></div>
+    <div id="toast-container" aria-live="polite" aria-atomic="false">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="flash-toast flash-{{ category }}" role="alert" data-autohide="true">
+                    {% if category == 'success' %}
+                        <i class="fas fa-check-circle toast-icon" aria-hidden="true"></i>
+                    {% elif category == 'danger' %}
+                        <i class="fas fa-times-circle toast-icon" aria-hidden="true"></i>
+                    {% elif category == 'warning' %}
+                        <i class="fas fa-exclamation-triangle toast-icon" aria-hidden="true"></i>
+                    {% else %}
+                        <i class="fas fa-info-circle toast-icon" aria-hidden="true"></i>
+                    {% endif %}
+                    <span class="toast-body">{{ message }}</span>
+                    <button class="toast-close" aria-label="Cerrar">&times;</button>
+                </div>
+            {% endfor %}
+        {% endwith %}
+    </div>
 
     <script>
         (function () {
@@ -165,7 +183,21 @@
                 info:    'fas fa-info-circle'
             };
 
-            function showToast(message, category) {
+            function closeToast(toast) {
+                toast.classList.add('toast-out');
+                toast.addEventListener('animationend', function () { toast.remove(); }, { once: true });
+            }
+
+            function initToast(toast) {
+                toast.querySelector('.toast-close').addEventListener('click', function () { closeToast(toast); });
+                setTimeout(function () { closeToast(toast); }, 4500);
+            }
+
+            /* Inicializa los toasts renderizados por Jinja2 */
+            document.querySelectorAll('.flash-toast').forEach(initToast);
+
+            /* Expone función global para disparar toasts desde JS */
+            window.showToast = function (message, category) {
                 category = category || 'info';
                 const container = document.getElementById('toast-container');
                 const toast = document.createElement('div');
@@ -175,28 +207,9 @@
                     '<i class="' + (icons[category] || icons.info) + ' toast-icon" aria-hidden="true"></i>' +
                     '<span class="toast-body">' + message + '</span>' +
                     '<button class="toast-close" aria-label="Cerrar">&times;</button>';
-
                 container.appendChild(toast);
-
-                const close = function () {
-                    toast.classList.add('toast-out');
-                    toast.addEventListener('animationend', function () {
-                        toast.remove();
-                    }, { once: true });
-                };
-
-                toast.querySelector('.toast-close').addEventListener('click', close);
-                setTimeout(close, 4500);
-            }
-
-            /* Renderiza los flash messages de Flask al cargar */
-            var flashes = {{ get_flashed_messages(with_categories=true) | tojson }};
-            flashes.forEach(function (item) {
-                showToast(item[1], item[0]);
-            });
-
-            /* Expone la función globalmente para usarla desde JS */
-            window.showToast = showToast;
+                initToast(toast);
+            };
         })();
     </script>
 
