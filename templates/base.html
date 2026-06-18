@@ -27,7 +27,6 @@
             gap: 10px;
             pointer-events: none;
         }
-
         .flash-toast {
             pointer-events: all;
             min-width: 280px;
@@ -47,12 +46,7 @@
         }
         .flash-toast .toast-icon { font-size: 16px; margin-top: 1px; flex-shrink: 0; }
         .flash-toast .toast-body { flex: 1; line-height: 1.4; }
-        .flash-toast .toast-close {
-            background: none; border: none; cursor: pointer;
-            font-size: 14px; opacity: 0.6; padding: 0; flex-shrink: 0;
-            color: inherit; line-height: 1;
-        }
-        .flash-toast .toast-close:hover { opacity: 1; }
+        .flash-toast .toast-close { display: none; }
 
         /* Categorías */
         .flash-success { background: #1a3a2a; color: #6ee7a7; border-left: 4px solid #22c55e; }
@@ -171,6 +165,7 @@
                         <i class="fas fa-info-circle toast-icon" aria-hidden="true"></i>
                     {% endif %}
                     <span class="toast-body">{{ message }}</span>
+                    <button class="toast-close" aria-label="Cerrar">&times;</button>
                 </div>
             {% endfor %}
         {% endwith %}
@@ -192,7 +187,7 @@
 
             function initToast(toast) {
                 toast.querySelector('.toast-close').addEventListener('click', function () { closeToast(toast); });
-                setTimeout(function () { closeToast(toast); }, 1000);
+                setTimeout(function () { closeToast(toast); }, 3000);
             }
 
             /* Inicializa los toasts renderizados por Jinja2 */
