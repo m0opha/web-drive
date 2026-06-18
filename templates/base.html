@@ -14,17 +14,20 @@
         .container-main { margin-top: 30px; }
         .card { border: none; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.1);} 
         #flashContainer {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 99999;
-            width: 400px;
-        }
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                width: 380px;
+                z-index: 99999;
+                pointer-events: none;
+            }
 
-       .flash-message {
-            margin-bottom: 10px;
-            border-radius: 10px;
-        }
+            .flash-message {
+                pointer-events: auto;
+                margin-bottom: 10px;
+                border-radius: 10px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+            }
     </style>
     {% block estilos %}{% endblock %}
 </head>
@@ -72,18 +75,14 @@
     </nav>
     {% endif %}
    
+    <!-- FLASH MESSAGES (FLOTANTE) -->
     <div id="flashContainer">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="alert alert-{{ category }} alert-dismissible fade show flash-message shadow-lg"
-                        role="alert">
+                    <div class="alert alert-{{ category }} alert-dismissible fade show flash-message">
                         {{ message }}
-
-                        <button type="button"
-                                class="btn-close"
-                                data-bs-dismiss="alert">
-                        </button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 {% endfor %}
             {% endif %}
