@@ -64,23 +64,26 @@
       <div class="card border-2 mb-4 upload-card">
         <div class="card-body">
           <h5 class="card-title mb-3">Upload Files</h5>
-          <form action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data" id="uploadForm">
+        <form id="uploadForm" enctype="multipart/form-data">
             <div class="input-group mb-3">
-              <input type="file" name="files" id="fileInput" class="form-control" multiple required>
-              <button class="btn btn-primary" type="submit">
+                <input type="file" name="files" id="fileInput" class="form-control" multiple required>
+                <button class="btn btn-primary" type="button" id="uploadBtn" onclick="uploadFiles()">
                 <i class="fas fa-upload"></i> Upload
-              </button>
+                </button>
             </div>
-            <div id="filesPreview"></div>
-          </form>
-          <div id="uploadOverlay" class="d-none position-absolute top-0 start-0 w-100 h-100 
-                d-flex align-items-center justify-content-center rounded"
-                style="background: rgba(0,0,0,0.4); z-index: 10;">
-            <div class="text-center text-white">
-                <div class="spinner-border mb-2" role="status"></div>
-                <p class="mb-0">Uploading...</p>
+
+            <!-- Barra de progreso (oculta al inicio) -->
+            <div id="progressContainer" class="d-none mt-2">
+                <div class="d-flex justify-content-between mb-1">
+                <small class="text-muted">Subiendo...</small>
+                <small id="progressText">0%</small>
+                </div>
+                <div class="progress">
+                <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated"
+                    role="progressbar" style="width: 0%"></div>
+                </div>
             </div>
-        </div>
+         </form>
         </div>
       </div>
 
@@ -275,10 +278,51 @@ async function saveFile() {
         document.getElementById('modalInfo').textContent = '⚠ ' + e.message;
     }
 }
-document.getElementById('uploadForm').addEventListener('submit', function() {
-  const overlay = document.getElementById('uploadOverlay');
-  overlay.classList.remove('d-none');
-  overlay.classList.add('d-flex');
-});
+function uploadFiles() {
+  const input = document.getElementById('fileInput');
+  if (!input.files.length) return;
+
+  const formData = new FormData();
+  for (const file of input.files) {
+    formData.append('files', file);
+  }
+
+  const xhr = new XMLHttpRequest();
+
+  // Evento de progreso real
+  xhr.upload.addEventListener('progress', function(e) {
+    if (e.lengthComputable) {
+      const pct = Math.round((e.loaded / e.total) * 100);
+      document.getElementById('progressBar').style.width = pct + '%';
+      document.getElementById('progressText').textContent = pct + '%';
+    }
+  });
+
+  xhr.addEventListener('load', function() {
+    if (xhr.status === 200 || xhr.status === 302) {
+      // Redirige igual que Flask
+      window.location.href = "{{ url_for('dashboard') }}";
+    }
+  });
+
+  xhr.addEventListener('error', function() {
+    alert('Error al subir los archivos.');
+    resetUI();
+  });
+
+  // Mostrar barra y deshabilitar botón
+  document.getElementById('progressContainer').classList.remove('d-none');
+  document.getElementById('uploadBtn').disabled = true;
+
+  xhr.open('POST', "{{ url_for('upload_file') }}");
+  xhr.send(formData);
+}
+
+function resetUI() {
+  document.getElementById('progressContainer').classList.add('d-none');
+  document.getElementById('progressBar').style.width = '0%';
+  document.getElementById('progressText').textContent = '0%';
+  document.getElementById('uploadBtn').disabled = false;
+}
 </script>
 {% endblock %}
