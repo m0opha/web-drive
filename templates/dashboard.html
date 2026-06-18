@@ -289,20 +289,19 @@ function uploadFiles() {
 
   const xhr = new XMLHttpRequest();
 
-  // Evento de progreso real
   xhr.upload.addEventListener('progress', function(e) {
     if (e.lengthComputable) {
       const pct = Math.round((e.loaded / e.total) * 100);
       document.getElementById('progressBar').style.width = pct + '%';
       document.getElementById('progressText').textContent = pct + '%';
+      if (pct === 100) {
+        document.querySelector('#progressContainer .text-muted').textContent = 'Procesando...';
+      }
     }
   });
 
   xhr.addEventListener('load', function() {
-    if (xhr.status === 200 || xhr.status === 302) {
-      // Redirige igual que Flask
-      window.location.href = "{{ url_for('dashboard') }}";
-    }
+    window.location.href = "{{ url_for('dashboard') }}";
   });
 
   xhr.addEventListener('error', function() {
@@ -310,7 +309,6 @@ function uploadFiles() {
     resetUI();
   });
 
-  // Mostrar barra y deshabilitar botón
   document.getElementById('progressContainer').classList.remove('d-none');
   document.getElementById('uploadBtn').disabled = true;
 

@@ -38,7 +38,7 @@ app.config.update(
     SESSION_COOKIE_SECURE=False, #False if passthrough behind nginx reverse proxy
     SESSION_COOKIE_HTTPONLY=False,
     SESSION_COOKIE_SAMESITE="Lax",
-    MAX_CONTENT_LENGTH=3 * 1024 * 1024 * 1024, #5 Gb
+    MAX_CONTENT_LENGTH= 21 * 1024 ** 3 
 )
 
 
