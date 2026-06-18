@@ -4,7 +4,10 @@ services:
     container_name: web-drive
     restart: unless-stopped
     ports:
-      - "127.0.0.1:5000:5000"
+      - "5000:5000"
+    environment:
+      - SCRIPT_NAME=/web-drive
+    command: gunicorn app:app --bind 0.0.0.0:5000 --access-logfile -
     volumes:
       - ./uploads:/web-drive/uploads
       - ./users.db:/web-drive/users.db
