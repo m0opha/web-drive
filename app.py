@@ -7,7 +7,8 @@ from functools import wraps
 import bcrypt
 import mimetypes
 import os
-
+import re
+from flask import Response
 
 from user import UserDatabase
 
@@ -189,6 +190,7 @@ def upload_file():
     return redirect(url_for('dashboard'))
 
 
+
 @app.route('/download/<filename>')
 @login_required
 def download_file(filename):
@@ -204,6 +206,55 @@ def download_file(filename):
         as_attachment=True,
         download_name=os.path.basename(file_path)
     )
+
+
+@app.route('/stream/<filename>')
+@login_required
+def stream_file(filename):
+    username = session.get('username')
+    file_path = safe_user_path(username, filename)
+
+    if file_path is None or not os.path.isfile(file_path):
+        abort(404)
+
+    file_size = os.path.getsize(file_path)
+    mime = get_mime_type(file_path)
+    range_header = request.headers.get('Range')
+
+    if not range_header:
+        # Sin Range → entrega completa normal
+        return send_file(file_path, mimetype=mime)
+
+    # Parsear Range: bytes=start-end
+    match = re.search(r'bytes=(\d+)-(\d*)', range_header)
+    if not match:
+        abort(416)
+
+    start = int(match.group(1))
+    end   = int(match.group(2)) if match.group(2) else file_size - 1
+    end   = min(end, file_size - 1)
+    length = end - start + 1
+
+    def generate():
+        with open(file_path, 'rb') as f:
+            f.seek(start)
+            remaining = length
+            chunk = 65536  # 64 KB por chunk
+            while remaining > 0:
+                data = f.read(min(chunk, remaining))
+                if not data:
+                    break
+                remaining -= len(data)
+                yield data
+
+    headers = {
+        'Content-Range':  f'bytes {start}-{end}/{file_size}',
+        'Accept-Ranges':  'bytes',
+        'Content-Length': str(length),
+        'Content-Type':   mime,
+    }
+
+    return Response(generate(), status=206, headers=headers)
 
 
 @app.route('/delete/<filename>', methods=['POST'])

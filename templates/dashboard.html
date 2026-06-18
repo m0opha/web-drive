@@ -219,16 +219,15 @@ async function viewFile(nombre, url) {
             return;
         }
         if (mimeType.startsWith('video/')) {
-            const blob = await res.blob();
-            document.getElementById('modalVideo').src = URL.createObjectURL(blob);
             hideViewers();
+            document.getElementById('modalVideo').src = url.replace('/see/', '/stream/');
             document.getElementById('viewerVideo').style.display = 'block';
             return;
         }
+
         if (mimeType.startsWith('audio/')) {
-            const blob = await res.blob();
-            document.getElementById('modalAudio').src = URL.createObjectURL(blob);
             hideViewers();
+            document.getElementById('modalAudio').src = url.replace('/see/', '/stream/');
             document.getElementById('viewerAudio').style.display = 'block';
             return;
         }
