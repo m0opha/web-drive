@@ -47,7 +47,8 @@
 }
 </style>
 {% endblock %}
-{% block contenido %}
+
+{% block content %}
 <div class="container py-5">
   <div class="row">
     <div class="col-md-8 mx-auto">
@@ -55,19 +56,19 @@
       <!-- Welcome Card -->
       <div class="card border-0 shadow-sm mb-4 welcome-card">
         <div class="card-body">
-          <h2 class="mb-0">¡Bienvenido {{username}} 👋!</h2>
+          <h2 class="mb-0">Welcome {{username}} 👋!</h2>
         </div>
       </div>
 
       <!-- Upload Section -->
       <div class="card border-2 mb-4 upload-card">
         <div class="card-body">
-          <h5 class="card-title mb-3">Cargar Archivos</h5>
+          <h5 class="card-title mb-3">Upload Files</h5>
           <form action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data" id="uploadForm">
             <div class="input-group mb-3">
               <input type="file" name="files" id="fileInput" class="form-control" multiple required>
               <button class="btn btn-primary" type="submit">
-                <i class="fas fa-upload"></i> Subir
+                <i class="fas fa-upload"></i> Upload
               </button>
             </div>
             <div id="filesPreview"></div>
@@ -78,7 +79,7 @@
       <!-- Files List -->
       <div class="card border-0 shadow-sm">
         <div class="card-body">
-          <h5 class="card-title mb-4">Archivos Subidos</h5>
+          <h5 class="card-title mb-4">Uploaded Files</h5>
           
           {% if files %}
             <div class="files-list">
@@ -93,7 +94,7 @@
                 <div class="file-actions d-flex gap-2">
 
                   <form action="{{ url_for('see_file', filename=file) }}" method="get" class="m-0"
-                        onsubmit="event.preventDefault(); verArchivo('{{ file }}', this.action)">
+                        onsubmit="event.preventDefault(); viewFile('{{ file }}', this.action)">
                       <button type="submit" class="btn btn-sm btn-info text-white" title="View">
                           <i class="fas fa-eye"></i>
                       </button>
@@ -121,7 +122,7 @@
             {% else %}
             <div class="text-center py-5">
               <i class="fas fa-inbox text-muted" style="font-size: 2rem;"></i>
-              <p class="text-muted mt-3">No hay archivos aún</p>
+              <p class="text-muted mt-3">No files yet</p>
             </div>
           {% endif %}
 
@@ -132,289 +133,140 @@
   </div>
 </div>
 
-<div class="modal fade" id="modalVisor" tabindex="-1" data-bs-backdrop="static" >
+<div class="modal fade" id="modalVisor" tabindex="-1" data-bs-backdrop="static">
     <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <div class="modal-content">
 
             <div class="modal-header">
-                <h5 class="modal-title" id="modalNombre"></h5>
-
-                <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal">
-                </button>
+                <h5 class="modal-title" id="modalName"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
             <div class="modal-body p-0">
 
-                <div id="visorImagen"
-                     style="display:none;text-align:center;padding:1rem;">
-                    <img id="modalImagen"
-                         style="max-width:100%;max-height:75vh;">
+                <div id="viewerImage" style="display:none;text-align:center;padding:1rem;">
+                    <img id="modalImage" style="max-width:100%;max-height:75vh;">
                 </div>
 
-                <div id="visorPdf" style="display:none;">
-                    <iframe id="modalPdf"
-                            style="width:100%;height:75vh;border:none;">
-                    </iframe>
+                <div id="viewerPdf" style="display:none;">
+                    <iframe id="modalPdf" style="width:100%;height:75vh;border:none;"></iframe>
                 </div>
 
-                <div id="visorVideo"
-                     style="display:none;text-align:center;padding:1rem;">
-                    <video id="modalVideo"
-                           controls
-                           style="max-width:100%;max-height:75vh;">
-                    </video>
+                <div id="viewerVideo" style="display:none;text-align:center;padding:1rem;">
+                    <video id="modalVideo" controls style="max-width:100%;max-height:75vh;"></video>
                 </div>
 
-                <div id="visorAudio"
-                     style="display:none;padding:2rem;">
-                    <audio id="modalAudio"
-                           controls
-                           style="width:100%;">
-                    </audio>
+                <div id="viewerAudio" style="display:none;padding:2rem;">
+                    <audio id="modalAudio" controls style="width:100%;"></audio>
                 </div>
 
-                <div id="visorTexto" style="display:none;">
-                    <textarea
-                        id="modalContenido"
-                        style="
-                            width:100%;
-                            min-height:500px;
-                            padding:1rem;
-                            border:none;
-                            resize:vertical;
-                            background:#1e1e1e;
-                            color:#d4d4d4;
-                            font-family:monospace;
-                        ">
-                    </textarea>
+                <div id="viewerText" style="display:none;">
+                    <textarea id="modalContent" style="width:100%;min-height:500px;padding:1rem;border:none;resize:vertical;background:#1e1e1e;color:#d4d4d4;font-family:monospace;"></textarea>
                 </div>
 
-                <div id="visorCargando"
-                     style="padding:2rem;text-align:center;">
+                <div id="viewerLoading" style="padding:2rem;text-align:center;">
                     <div class="spinner-border"></div>
                 </div>
 
             </div>
 
             <div class="modal-footer">
-
-                <small
-                    id="modalInfo"
-                    class="text-muted me-auto">
-                </small>
-
-                <button
-                    id="btnGuardar"
-                    type="button"
-                    class="btn btn-primary"
-                    style="display:none"
-                    onclick="guardarArchivo()">
-
-                    Guardar
-                </button>
-
-                <button
-                    type="button"
-                    class="btn btn-secondary"
-                    data-bs-dismiss="modal">
-
-                    Cerrar
-                </button>
-
+                <small id="modalInfo" class="text-muted me-auto"></small>
+                <button id="btnSave" type="button" class="btn btn-primary" style="display:none" onclick="saveFile()">Save</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
 
         </div>
     </div>
 </div>
+
 <script>
-  let archivoActual = null;
+let currentFile = null;
 
-function ocultarVisores() {
-
-    [
-        'visorImagen',
-        'visorPdf',
-        'visorVideo',
-        'visorAudio',
-        'visorTexto',
-        'visorCargando'
-    ].forEach(id => {
-
+function hideViewers() {
+    ['viewerImage','viewerPdf','viewerVideo','viewerAudio','viewerText','viewerLoading'].forEach(id => {
         const el = document.getElementById(id);
-
-        if (el) {
-            el.style.display = 'none';
-        }
-
+        if (el) el.style.display = 'none';
     });
-
 }
 
-async function verArchivo(nombre, url) {
-
-    archivoActual = nombre;
-
-    document.getElementById('modalNombre').textContent = nombre;
+async function viewFile(nombre, url) {
+    currentFile = nombre;
+    document.getElementById('modalName').textContent = nombre;
     document.getElementById('modalInfo').textContent = '';
-    document.getElementById('btnGuardar').style.display = 'none';
-
-    ocultarVisores();
-
-    document.getElementById('visorCargando').style.display = 'block';
-
-    new bootstrap.Modal(
-        document.getElementById('modalVisor')
-    ).show();
+    document.getElementById('btnSave').style.display = 'none';
+    hideViewers();
+    document.getElementById('viewerLoading').style.display = 'block';
+    new bootstrap.Modal(document.getElementById('modalVisor')).show();
 
     try {
-
         const res = await fetch(url);
-
-        if (!res.ok) {
-            throw new Error(`HTTP ${res.status}`);
-        }
-
-        const mimeType =
-            (res.headers.get('Content-Type') || '')
-            .split(';')[0]
-            .trim();
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const mimeType = (res.headers.get('Content-Type') || '').split(';')[0].trim();
 
         if (mimeType.startsWith('image/')) {
-
             const blob = await res.blob();
-
-            document.getElementById('modalImagen').src =
-                URL.createObjectURL(blob);
-
-            ocultarVisores();
-
-            document.getElementById('visorImagen').style.display = 'block';
-
+            document.getElementById('modalImage').src = URL.createObjectURL(blob);
+            hideViewers();
+            document.getElementById('viewerImage').style.display = 'block';
             return;
         }
-
         if (mimeType === 'application/pdf') {
-
             const blob = await res.blob();
-
-            document.getElementById('modalPdf').src =
-                URL.createObjectURL(blob);
-
-            ocultarVisores();
-
-            document.getElementById('visorPdf').style.display = 'block';
-
+            document.getElementById('modalPdf').src = URL.createObjectURL(blob);
+            hideViewers();
+            document.getElementById('viewerPdf').style.display = 'block';
             return;
         }
-
         if (mimeType.startsWith('video/')) {
-
             const blob = await res.blob();
-
-            document.getElementById('modalVideo').src =
-                URL.createObjectURL(blob);
-
-            ocultarVisores();
-
-            document.getElementById('visorVideo').style.display = 'block';
-
+            document.getElementById('modalVideo').src = URL.createObjectURL(blob);
+            hideViewers();
+            document.getElementById('viewerVideo').style.display = 'block';
             return;
         }
-
         if (mimeType.startsWith('audio/')) {
-
             const blob = await res.blob();
-
-            document.getElementById('modalAudio').src =
-                URL.createObjectURL(blob);
-
-            ocultarVisores();
-
-            document.getElementById('visorAudio').style.display = 'block';
-
+            document.getElementById('modalAudio').src = URL.createObjectURL(blob);
+            hideViewers();
+            document.getElementById('viewerAudio').style.display = 'block';
             return;
         }
-
-        if (
-            mimeType.startsWith('text/') ||
-            mimeType.includes('json') ||
-            mimeType.includes('xml') ||
-            mimeType.includes('javascript')
-        ) {
-
+        if (mimeType.startsWith('text/') || mimeType.includes('json') || mimeType.includes('xml') || mimeType.includes('javascript')) {
             const texto = await res.text();
-
-            document.getElementById('modalContenido').value =
-                texto;
-
-            ocultarVisores();
-
-            document.getElementById('visorTexto').style.display = 'block';
-            document.getElementById('btnGuardar').style.display = 'inline-block';
-
+            document.getElementById('modalContent').value = texto;
+            hideViewers();
+            document.getElementById('viewerText').style.display = 'block';
+            document.getElementById('btnSave').style.display = 'inline-block';
             return;
         }
 
-        ocultarVisores();
-
-        document.getElementById('visorTexto').style.display = 'block';
-
-        document.getElementById('modalContenido').value =
-            `Vista previa no disponible\n\nTipo MIME: ${mimeType}`;
-
+        hideViewers();
+        document.getElementById('viewerText').style.display = 'block';
+        document.getElementById('modalContent').value = `Preview not available\n\nMIME type: ${mimeType}`;
     }
     catch (e) {
-
-        ocultarVisores();
-
-        document.getElementById('visorTexto').style.display = 'block';
-
-        document.getElementById('modalContenido').value =
-            `⚠ ${e.message}`;
+        hideViewers();
+        document.getElementById('viewerText').style.display = 'block';
+        document.getElementById('modalContent').value = `⚠ ${e.message}`;
     }
-
 }
 
-async function guardarArchivo() {
-
-    const contenido =
-        document.getElementById('modalContenido').value;
-
+async function saveFile() {
+    const contenido = document.getElementById('modalContent').value;
     try {
-
-        const url =
-            "{{ url_for('edit_file', filename='__FILE__') }}"
-            .replace(
-                '__FILE__',
-                encodeURIComponent(archivoActual)
-            );
-
+        const url = "{{ url_for('edit_file', filename='__FILE__') }}".replace('__FILE__', encodeURIComponent(currentFile));
         const res = await fetch(url, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'text/plain'
-            },
+            headers: { 'Content-Type': 'text/plain' },
             body: contenido
         });
-
-        if (!res.ok) {
-            throw new Error(`HTTP ${res.status}`);
-        }
-
-        document.getElementById('modalInfo').textContent =
-            '✓ Guardado correctamente';
-
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        document.getElementById('modalInfo').textContent = '✓ Saved successfully';
     }
     catch (e) {
-
-        document.getElementById('modalInfo').textContent =
-            '⚠ ' + e.message;
-
+        document.getElementById('modalInfo').textContent = '⚠ ' + e.message;
     }
-
 }
 </script>
 {% endblock %}
