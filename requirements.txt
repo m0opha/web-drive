@@ -3,3 +3,4 @@ Werkzeug==2.3.0
 dotenv
 bcrypt
 gunicorn
+gevent

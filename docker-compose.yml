@@ -10,3 +10,4 @@ services:
       - ./users.db:/web-drive/users.db
       - ./templates:/web-drive/templates
       - ./.env:/web-drive/.env
+      - ./gunicorn.conf.py:/web-drive/gunicorn.conf.py
